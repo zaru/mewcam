@@ -1,2 +1,6 @@
 dist-bodypix-app/
 node_modules/
+
+releases/**/*.app
+releases/**/*.dmg
+releases/mewcam-darwin-x64/
