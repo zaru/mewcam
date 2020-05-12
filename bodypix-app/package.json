@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "watch": "cross-env NODE_ENV=development parcel index.html --no-hmr --open ",
-    "build": "cross-env NODE_ENV=production parcel build index.html --public-url ./",
+    "build": "cross-env NODE_ENV=production parcel build index.html --public-url ./ --out-dir ../dist-bodypix-app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
