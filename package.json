@@ -1,0 +1,16 @@
+{
+  "name": "mewcam",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^8.2.5",
+    "eslint": "^7.0.0",
+    "eslint-config-google": "^0.14.0"
+  }
+}
