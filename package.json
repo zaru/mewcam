@@ -2,15 +2,18 @@
   "name": "mewcam",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "app/main.js",
   "scripts": {
     "start": "electron .",
+    "pack": "electron-packager . mewcam --platform=darwin --arch=x64 --out=releases --overwrite --icon=assets/icon.icns --ignore='(node_modules|.git)'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "electron": "^8.2.5",
+    "electron-builder": "^22.6.0",
+    "electron-packager": "^14.2.1",
     "eslint": "^7.0.0",
     "eslint-config-google": "^0.14.0"
   }
