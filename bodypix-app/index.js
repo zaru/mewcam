@@ -1,30 +1,5 @@
 const bodyPix = require('@tensorflow-models/body-pix');
 
-/**
- *
- * @return {Promise<unknown>}
- */
-async function setupStream() {
-  const video = document.getElementById('video');
-  video.srcObject = await _getStream();
-
-  return new Promise((resolve) => {
-    video.onloadedmetadata = () => {
-      resolve(video);
-    };
-  });
-}
-
-function _getStream() {
-  const config = {
-    video: {
-      audio: false,
-      facingMode: 'user',
-    },
-  };
-  return navigator.mediaDevices.getUserMedia(config);
-}
-
 const state = {
   video: null,
   videoWidth: 0,
@@ -34,13 +9,10 @@ const state = {
   },
 };
 
-async function loadVideo() {
-  state.video = await setupStream();
-  state.videoWidth = state.video.videoWidth;
-  state.videoHeight = state.video.videoHeight;
-  state.video.play();
-}
-
+/**
+ * Main
+ * @return {Promise<void>}
+ */
 async function workload() {
   setupResizeGuide();
   await loadVideo();
@@ -65,7 +37,9 @@ async function workload() {
     const scale = originalCanvas.width / video.videoWidth;
     originalCtx.setTransform(scale, 0, 0, scale, 0, 0);
     originalCtx.drawImage(state.video, 0, 0);
-    const imageData = originalCtx.getImageData(0, 0, originalCanvas.width, originalCanvas.height);
+    const imageData = originalCtx.getImageData(
+        0, 0, originalCanvas.width, originalCanvas.height,
+    );
     drawToCanvas(canvas, segmentation, imageData);
 
     requestAnimationFrame(segmentationFrame);
@@ -73,10 +47,57 @@ async function workload() {
   segmentationFrame();
 }
 
+/**
+ * Set up video stream
+ * @return {Promise<void>}
+ */
+async function setupStream() {
+  const video = document.getElementById('video');
+  video.srcObject = await _getStream();
+
+  return new Promise((resolve) => {
+    video.onloadedmetadata = () => {
+      resolve(video);
+    };
+  });
+}
+
+/**
+ * Get video stream
+ * @return {Promise<MediaStream>}
+ * @private
+ */
+function _getStream() {
+  const config = {
+    video: {
+      audio: false,
+      facingMode: 'user',
+    },
+  };
+  return navigator.mediaDevices.getUserMedia(config);
+}
+
+/**
+ * Load video stream
+ * @return {Promise<void>}
+ */
+async function loadVideo() {
+  state.video = await setupStream();
+  state.videoWidth = state.video.videoWidth;
+  state.videoHeight = state.video.videoHeight;
+  state.video.play();
+}
+
+/**
+ * Draw to canvas from body-pix segmentation video
+ * @param {HTMLCanvasElement} canvas
+ * @param {SemanticPersonSegmentation} segmentation
+ * @param {ImageData} originalImage
+ */
 function drawToCanvas(canvas, segmentation, originalImage) {
   const ctx = canvas.getContext('2d');
-  const width = parseInt(canvas.width);
-  const height = parseInt(canvas.height);
+  const width = canvas.width;
+  const height = canvas.height;
   ctx.clearRect(0, 0, width, height);
   const imageData = ctx.getImageData(0, 0, width, height);
   const pixels = imageData.data;
@@ -95,6 +116,11 @@ function drawToCanvas(canvas, segmentation, originalImage) {
   ctx.putImageData(imageData, 0, 0);
 }
 
+/**
+ * Resize element
+ * @param {Number} width
+ * @param {Number} height
+ */
 function resizeElement(width = 640, height = 480) {
   const borderBox = document.querySelector('.border-box');
   borderBox.style.width = `${width}px`;
@@ -114,6 +140,9 @@ function resizeElement(width = 640, height = 480) {
   });
 }
 
+/**
+ * Set up resize guide element
+ */
 function setupResizeGuide() {
   const wrap = document.querySelector('.wrap');
   const borderBox = document.querySelector('.border-box');
