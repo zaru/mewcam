@@ -45,9 +45,14 @@ async function workload() {
   setupResizeGuide();
   await loadVideo();
 
-  const net = await bodyPix.load(/** optional arguments, see below **/);
   resizeElement(window.innerWidth, window.innerHeight);
 
+  const net = await bodyPix.load({
+    architecture: 'MobileNetV1',
+    outputStride: 16,
+    multiplier: 0.5,
+    quantBytes: 2,
+  });
 
   const video = document.getElementById('video');
   const canvas = document.getElementById('canvas');
