@@ -14,10 +14,10 @@ const state = {
  * @return {Promise<void>}
  */
 async function workload() {
-  setupResizeGuide();
-  await loadVideo();
+  _setupResizeGuide();
+  await _loadVideo();
 
-  resizeElement(window.innerWidth, window.innerHeight);
+  _resizeElement(window.innerWidth, window.innerHeight);
 
   const net = await bodyPix.load({
     architecture: 'MobileNetV1',
@@ -40,7 +40,7 @@ async function workload() {
     const imageData = originalCtx.getImageData(
         0, 0, originalCanvas.width, originalCanvas.height,
     );
-    drawToCanvas(canvas, segmentation, imageData);
+    _drawToCanvas(canvas, segmentation, imageData);
 
     requestAnimationFrame(segmentationFrame);
   }
@@ -50,8 +50,9 @@ async function workload() {
 /**
  * Set up video stream
  * @return {Promise<void>}
+ * @private
  */
-async function setupStream() {
+async function _setupStream() {
   const video = document.getElementById('video');
   video.srcObject = await _getStream();
 
@@ -80,9 +81,10 @@ function _getStream() {
 /**
  * Load video stream
  * @return {Promise<void>}
+ * @private
  */
-async function loadVideo() {
-  state.video = await setupStream();
+async function _loadVideo() {
+  state.video = await _setupStream();
   state.videoWidth = state.video.videoWidth;
   state.videoHeight = state.video.videoHeight;
   state.video.play();
@@ -93,8 +95,9 @@ async function loadVideo() {
  * @param {HTMLCanvasElement} canvas
  * @param {SemanticPersonSegmentation} segmentation
  * @param {ImageData} originalImage
+ * @private
  */
-function drawToCanvas(canvas, segmentation, originalImage) {
+function _drawToCanvas(canvas, segmentation, originalImage) {
   const ctx = canvas.getContext('2d');
   const width = canvas.width;
   const height = canvas.height;
@@ -120,8 +123,9 @@ function drawToCanvas(canvas, segmentation, originalImage) {
  * Resize element
  * @param {Number} width
  * @param {Number} height
+ * @private
  */
-function resizeElement(width = 640, height = 480) {
+function _resizeElement(width = 640, height = 480) {
   const borderBox = document.querySelector('.border-box');
   borderBox.style.width = `${width}px`;
   borderBox.style.height = `${height}px`;
@@ -142,8 +146,9 @@ function resizeElement(width = 640, height = 480) {
 
 /**
  * Set up resize guide element
+ * @private
  */
-function setupResizeGuide() {
+function _setupResizeGuide() {
   const wrap = document.querySelector('.wrap');
   const borderBox = document.querySelector('.border-box');
   wrap.addEventListener('mouseover', () => {
@@ -157,7 +162,7 @@ function setupResizeGuide() {
 window.addEventListener('resize', () => {
   const width = window.innerWidth;
   const height = window.innerHeight;
-  resizeElement(width, height);
+  _resizeElement(width, height);
 
   const borderBox = document.querySelector('.border-box');
   borderBox.style.display = 'block';
