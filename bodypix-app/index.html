@@ -9,17 +9,42 @@
       margin: 0;
       padding: 0;
     }
+    .resizing {
+      background-color: #fff;
+    }
+    .wrap {
+      position: relative;
+    }
+    .border-box {
+      box-sizing: border-box;
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      border: 2px solid #ff3399;
+      border-radius: 4px;
+    }
     ::-webkit-scrollbar {
       display: none;
     }
+    canvas {
+      vertical-align: bottom;
+    }
     video {
+      display: none;
+    }
+    #original-canvas {
       display: none;
     }
   </style>
 </head>
 <body style="-webkit-app-region: drag">
-<canvas id="canvas" width="640" height="480"></canvas>
-<video id="video" width="640" height="480"></video>
+<div class="wrap">
+  <canvas id="canvas"></canvas>
+  <canvas id="original-canvas"></canvas>
+  <video id="video"></video>
+  <div class="border-box"></div>
+</div>
 <script src="index.js"></script>
 </body>
 </html>

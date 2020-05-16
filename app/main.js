@@ -10,7 +10,7 @@ function createWindow() {
     hasShadow: false,
     transparent: true,
     frame: false,
-    resizable: false,
+    resizable: true,
   });
   // MagickCode
   app.dock.hide();
@@ -18,6 +18,13 @@ function createWindow() {
   win.setVisibleOnAllWorkspaces(true);
   win.setFullScreenable(false);
   app.dock.show();
+
+  win.addListener('resize', () => {
+    win.setOpacity(0.5);
+    setTimeout(() => {
+      win.setOpacity(1.0);
+    }, 250);
+  });
 
   win.loadFile('./dist-bodypix-app/index.html');
 
