@@ -1,5 +1,7 @@
 const bodyPix = require('@tensorflow-models/body-pix');
 const VideoManager = require('./video-manager');
+const Settings = require('./settings');
+const settings = new Settings;
 
 const state = {
   deviceId: null,
@@ -63,6 +65,8 @@ function switchVideo(deviceId) {
   _loadVideo(deviceId).then(() => {
     state.changingVideo = false;
   });
+
+  settings.setDeviceId(deviceId);
 }
 
 function stopExistingVideoCapture() {
@@ -238,5 +242,7 @@ function buildContextMenu(videoList) {
 const videoManager = new VideoManager;
 videoManager.getVideoList().then((list) => {
   buildContextMenu(list);
-  workload(list[0].deviceId);
+
+  const deviceId = settings.getDeviceId() || list[0].deviceId;
+  workload(deviceId);
 });
