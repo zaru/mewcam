@@ -25,12 +25,7 @@ async function workload(deviceId) {
 
   _resizeElement(window.innerWidth, window.innerHeight);
 
-  const net = await bodyPix.load({
-    architecture: 'MobileNetV1',
-    outputStride: 16,
-    multiplier: 0.5,
-    quantBytes: 2,
-  });
+  const net = await bodyPix.load(settings.getBodyPixModel());
 
   const video = document.getElementById('video');
   const canvas = document.getElementById('canvas');
