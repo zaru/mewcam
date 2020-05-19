@@ -43,7 +43,7 @@ function createWindow() {
     }, 250);
   });
 
-  win.loadURL(isDev ? 'http://localhost:1234' : './dist-body-pix-app/index.html');
+  win.loadURL(isDev ? 'http://localhost:1234' : `file://${__dirname}/../dist-bodypix-app/index.html`);
 
   // win.webContents.openDevTools();
 }
