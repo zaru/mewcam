@@ -1,9 +1,12 @@
 const bodyPix = require('@tensorflow-models/body-pix');
+const VideoManager = require('./video-manager');
 
 const state = {
+  deviceId: null,
   video: null,
   videoWidth: 0,
   videoHeight: 0,
+  changingVideo: false,
   ratio() {
     return this.videoHeight / this.videoWidth;
   },
@@ -11,11 +14,12 @@ const state = {
 
 /**
  * Main
+ * @param {string} deviceId
  * @return {Promise<void>}
  */
-async function workload() {
+async function workload(deviceId) {
   _setupResizeGuide();
-  await _loadVideo();
+  await _loadVideo(deviceId);
 
   _resizeElement(window.innerWidth, window.innerHeight);
 
@@ -31,20 +35,43 @@ async function workload() {
   const originalCanvas = document.getElementById('original-canvas');
 
   async function segmentationFrame() {
-    const segmentation = await net.segmentPerson(state.video);
+    if (!state.changingVideo) {
+      const segmentation = await net.segmentPerson(state.video);
 
-    const originalCtx = originalCanvas.getContext('2d');
-    const scale = originalCanvas.width / video.videoWidth;
-    originalCtx.setTransform(scale, 0, 0, scale, 0, 0);
-    originalCtx.drawImage(state.video, 0, 0);
-    const imageData = originalCtx.getImageData(
-        0, 0, originalCanvas.width, originalCanvas.height,
-    );
-    _drawToCanvas(canvas, segmentation, imageData);
+      const originalCtx = originalCanvas.getContext('2d');
+      const scale = originalCanvas.width / video.videoWidth;
+      originalCtx.setTransform(scale, 0, 0, scale, 0, 0);
+      originalCtx.drawImage(state.video, 0, 0);
+      const imageData = originalCtx.getImageData(
+          0, 0, originalCanvas.width, originalCanvas.height,
+      );
+      _drawToCanvas(canvas, segmentation, imageData);
+    }
 
     requestAnimationFrame(segmentationFrame);
   }
   segmentationFrame();
+}
+
+/**
+ * Switch video
+ * @param {string} deviceId
+ */
+function switchVideo(deviceId) {
+  state.changingVideo = true;
+  stopExistingVideoCapture();
+  _loadVideo(deviceId).then(() => {
+    state.changingVideo = false;
+  });
+}
+
+function stopExistingVideoCapture() {
+  if (state.video && state.video.srcObject) {
+    state.video.srcObject.getTracks().forEach((track) => {
+      track.stop();
+    });
+    state.video.srcObject = null;
+  }
 }
 
 /**
@@ -71,6 +98,7 @@ async function _setupStream() {
 function _getStream() {
   const config = {
     video: {
+      deviceId: state.deviceId,
       audio: false,
       facingMode: 'user',
     },
@@ -80,10 +108,12 @@ function _getStream() {
 
 /**
  * Load video stream
+ * @param {string} deviceId
  * @return {Promise<void>}
  * @private
  */
-async function _loadVideo() {
+async function _loadVideo(deviceId) {
+  state.deviceId = deviceId;
   state.video = await _setupStream();
   state.videoWidth = state.video.videoWidth;
   state.videoHeight = state.video.videoHeight;
@@ -174,4 +204,39 @@ window.addEventListener('resize', () => {
   }, 500);
 });
 
-workload();
+/**
+ * Build context menu
+ * @param {MediaDeviceInfo[]} videoList
+ */
+function buildContextMenu(videoList) {
+  const remote = window.remote;
+  const Menu = remote.Menu;
+
+  const videoMenu = [];
+  videoList.forEach((device) => {
+    videoMenu.push({
+      label: device.label,
+      click() {
+        switchVideo(device.deviceId);
+      },
+    });
+  });
+
+  const menu = Menu.buildFromTemplate([
+    {
+      label: 'Select Video',
+      submenu: videoMenu,
+    },
+  ]);
+
+  window.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+    menu.popup(remote.getCurrentWindow());
+  }, false);
+}
+
+const videoManager = new VideoManager;
+videoManager.getVideoList().then((list) => {
+  buildContextMenu(list);
+  workload(list[0].deviceId);
+});

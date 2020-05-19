@@ -1,6 +1,7 @@
 const {app, BrowserWindow} = require('electron');
 const isDev = require('electron-is-dev');
 const os = require('os');
+const path = require('path');
 
 if (isDev) {
   process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = true;
@@ -17,6 +18,10 @@ function createWindow() {
     transparent: true,
     frame: false,
     resizable: true,
+    webPreferences: {
+      nodeIntegration: false,
+      preload: path.join(__dirname, '/preload.js'),
+    },
   });
 
   const osName = os.platform();
