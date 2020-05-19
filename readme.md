@@ -12,3 +12,9 @@ see https://twitter.com/zaru/status/1259870621581754370
 ## Download
 
 - [v1.1.0 for macos](https://github.com/zaru/mewcam/releases/download/v1.1.0/mewcam.dmg)
+
+## ToDo
+
+- [ ] Windows builds
+- [ ] Support for multiple cameras
+- [ ] Support for multiple transparency qualities
