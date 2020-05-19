@@ -1,5 +1,9 @@
 #!/bin/bash
 
+rm -rf $1
+rm -rf ./app/mewcam.app
+cp -R ./build/mac/mewcam.app ./app
+
 test -f mewcam.dmg && rm mewcam.dmg
 test -f rw.mewcam.dmg && rm rw.mewcam.dmg
 create-dmg \
@@ -13,3 +17,6 @@ create-dmg \
   --hide-extension "mewcam.app" \
   "mewcam.dmg" \
   "./app/"
+
+mkdir $1
+mv mewcam.dmg $1
