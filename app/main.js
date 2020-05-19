@@ -1,5 +1,6 @@
 const {app, BrowserWindow} = require('electron');
 const isDev = require('electron-is-dev');
+const os = require('os');
 
 if (isDev) {
   process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = true;
@@ -17,12 +18,18 @@ function createWindow() {
     frame: false,
     resizable: true,
   });
+
+  const osName = os.platform();
   // MagickCode
-  app.dock.hide();
-  win.setAlwaysOnTop(true, 'floating');
-  win.setVisibleOnAllWorkspaces(true);
-  win.setFullScreenable(false);
-  app.dock.show();
+  if (osName === 'darwin') {
+    app.dock.hide();
+    win.setAlwaysOnTop(true, 'floating');
+    win.setVisibleOnAllWorkspaces(true);
+    win.setFullScreenable(false);
+    app.dock.show();
+  } else if (osName === 'win32' || osName === 'cygwin') {
+    win.setAlwaysOnTop(true);
+  }
 
   win.addListener('resize', () => {
     win.setOpacity(0.5);
