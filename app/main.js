@@ -1,4 +1,9 @@
 const {app, BrowserWindow} = require('electron');
+const isDev = require('electron-is-dev');
+
+if (isDev) {
+  process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = true;
+}
 
 /**
  * MainWindow
@@ -26,7 +31,7 @@ function createWindow() {
     }, 250);
   });
 
-  win.loadFile('./dist-bodypix-app/index.html');
+  win.loadURL(isDev ? 'http://localhost:1234' : './dist-body-pix-app/index.html');
 
   // win.webContents.openDevTools();
 }

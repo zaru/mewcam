@@ -1,5 +1,6 @@
 dist-bodypix-app/
 node_modules/
+.cache/
 
 releases/**/*.app
 releases/**/*.dmg
