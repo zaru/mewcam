@@ -4,3 +4,4 @@ node_modules/
 releases/**/*.app
 releases/**/*.dmg
 releases/mewcam-darwin-x64/
+releases/windows/

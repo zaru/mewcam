@@ -6,6 +6,7 @@
   "scripts": {
     "start": "electron .",
     "pack": "electron-packager . mewcam --platform=darwin --arch=x64 --out=releases --overwrite --icon=assets/icon.icns --ignore='(node_modules|.git)' --asar",
+    "pack-win": "electron-builder --win --x64",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -16,5 +17,25 @@
     "electron-packager": "^14.2.1",
     "eslint": "^7.0.0",
     "eslint-config-google": "^0.14.0"
+  },
+  "build": {
+    "appId": "org.tofu-kun.mewcam",
+    "directories": {
+      "output": "releases/windows/"
+    },
+    "files": [
+      "app",
+      "assets",
+      "dist-bodypix-app",
+      "package.json",
+      "package-lock.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
