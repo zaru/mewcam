@@ -4,5 +4,10 @@
     "node": true,
     "es6": true
   },
+  "parserOptions": {
+    // Required for certain syntax usages
+    //"ecmaVersion": 6
+    "ecmaVersion": 2017
+  },
   "extends": ["eslint:recommended", "google"]
 }
