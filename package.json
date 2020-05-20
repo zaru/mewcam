@@ -1,20 +1,68 @@
 {
   "name": "mewcam",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "",
   "main": "app/main.js",
   "scripts": {
-    "start": "electron .",
-    "pack": "electron-packager . mewcam --platform=darwin --arch=x64 --out=releases --overwrite --icon=assets/icon.icns --ignore='(node_modules|.git)' --asar",
+    "start": "concurrently \"cross-env NODE_ENV=development parcel ./app/index.html --no-hmr\" \"wait-on http://localhost:1234 && electron . \"",
+    "build": "cross-env NODE_ENV=production parcel build ./app/index.html --public-url ./ --out-dir ./dist-bodypix-app",
+    "pack:mac": "electron-builder --mac --x64",
+    "pack:win": "electron-builder --win --x64",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "@tensorflow-models/body-pix": "^2.0.5",
+    "@tensorflow-models/posenet": "^2.2.1",
+    "@tensorflow/tfjs-converter": "^1.7.4",
+    "@tensorflow/tfjs-core": "^1.7.4",
+    "electron-is-dev": "^1.2.0",
+    "electron-log": "^4.1.2",
+    "electron-updater": "^4.3.1"
+  },
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "clang-format": "^1.4.0",
+    "concurrently": "^5.2.0",
+    "cross-env": "^7.0.2",
     "electron": "^8.2.5",
     "electron-builder": "^22.6.0",
-    "electron-packager": "^14.2.1",
     "eslint": "^7.0.0",
-    "eslint-config-google": "^0.14.0"
+    "eslint-config-google": "^0.14.0",
+    "parcel-bundler": "^1.12.4",
+    "wait-on": "^5.0.0"
+  },
+  "build": {
+    "appId": "org.tofu-kun.mewcam",
+    "directories": {
+      "output": "releases/build"
+    },
+    "files": [
+      "app",
+      "build",
+      "dist-bodypix-app",
+      "package.json",
+      "package-lock.json"
+    ],
+    "publish": [{
+      "provider": "github",
+      "owner": "zaru",
+      "repo": "mewcam"
+    }],
+    "mac": {
+      "target": "dir",
+      "entitlements": "entitlements.mac.plist"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }

@@ -1,4 +1,12 @@
 const {app, BrowserWindow} = require('electron');
+const isDev = require('electron-is-dev');
+const os = require('os');
+const path = require('path');
+require('./auto-update');
+
+if (isDev) {
+  process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = true;
+}
 
 /**
  * MainWindow
@@ -11,13 +19,23 @@ function createWindow() {
     transparent: true,
     frame: false,
     resizable: true,
+    webPreferences: {
+      nodeIntegration: false,
+      preload: path.join(__dirname, '/preload.js'),
+    },
   });
+
+  const osName = os.platform();
   // MagickCode
-  app.dock.hide();
-  win.setAlwaysOnTop(true, 'floating');
-  win.setVisibleOnAllWorkspaces(true);
-  win.setFullScreenable(false);
-  app.dock.show();
+  if (osName === 'darwin') {
+    app.dock.hide();
+    win.setAlwaysOnTop(true, 'floating');
+    win.setVisibleOnAllWorkspaces(true);
+    win.setFullScreenable(false);
+    app.dock.show();
+  } else if (osName === 'win32' || osName === 'cygwin') {
+    win.setAlwaysOnTop(true);
+  }
 
   win.addListener('resize', () => {
     win.setOpacity(0.5);
@@ -26,7 +44,7 @@ function createWindow() {
     }, 250);
   });
 
-  win.loadFile('./dist-bodypix-app/index.html');
+  win.loadURL(isDev ? 'http://localhost:1234' : `file://${__dirname}/../dist-bodypix-app/index.html`);
 
   // win.webContents.openDevTools();
 }
