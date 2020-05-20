@@ -1,4 +1,4 @@
-const {app, BrowserWindow} = require('electron');
+const {app, BrowserWindow, ipcMain} = require('electron');
 const isDev = require('electron-is-dev');
 const os = require('os');
 const path = require('path');
@@ -8,13 +8,19 @@ if (isDev) {
   process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = true;
 }
 
+
+/**
+ * @type {BrowserWindow}
+ */
+let win = null;
+
 /**
  * MainWindow
  */
 function createWindow() {
-  const win = new BrowserWindow({
-    width: 640,
-    height: 480,
+  win = new BrowserWindow({
+    width: 320,
+    height: 240,
     hasShadow: false,
     transparent: true,
     frame: false,
@@ -61,4 +67,14 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
+});
+
+ipcMain.on('windowResize', (event, arg) => {
+  let size = [320, 240];
+  if (arg === 'Small') {
+    size = [160, 120];
+  } else if (arg === 'Big') {
+    size = [640, 480];
+  }
+  win.setSize(...size);
 });
