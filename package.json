@@ -1,6 +1,6 @@
 {
   "name": "mewcam",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "",
   "main": "app/main.js",
   "scripts": {
@@ -17,7 +17,9 @@
     "@tensorflow-models/posenet": "^2.2.1",
     "@tensorflow/tfjs-converter": "^1.7.4",
     "@tensorflow/tfjs-core": "^1.7.4",
-    "electron-is-dev": "^1.2.0"
+    "electron-is-dev": "^1.2.0",
+    "electron-log": "^4.1.2",
+    "electron-updater": "^4.3.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
@@ -46,6 +48,11 @@
       "package.json",
       "package-lock.json"
     ],
+    "publish": [{
+      "provider": "github",
+      "owner": "zaru",
+      "repo": "mewcam"
+    }],
     "mac": {
       "target": "dir",
       "entitlements": "entitlements.mac.plist"

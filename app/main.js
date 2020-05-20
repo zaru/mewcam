@@ -2,6 +2,7 @@ const {app, BrowserWindow} = require('electron');
 const isDev = require('electron-is-dev');
 const os = require('os');
 const path = require('path');
+require('./auto-update');
 
 if (isDev) {
   process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = true;
