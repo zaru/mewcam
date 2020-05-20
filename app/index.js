@@ -1,5 +1,6 @@
 const bodyPix = require('@tensorflow-models/body-pix');
 const VideoManager = require('./video-manager');
+const TrayMenu = require('./tray-menu');
 const Settings = require('./settings');
 const settings = new Settings;
 
@@ -13,6 +14,7 @@ const state = {
     return this.videoHeight / this.videoWidth;
   },
   tray: null,
+  trayMenu: null,
 };
 
 /**
@@ -204,40 +206,13 @@ window.addEventListener('resize', () => {
   }, 500);
 });
 
-/**
- * Build tray menu
- * @param {MediaDeviceInfo[]} videoList
- */
-function buildTrayMenu(videoList) {
-  const remote = window.remote;
-  const {Tray, Menu} = remote;
-  const icon = window.os.platform() === 'darwin' ? 'TrayIconTemplate.png' : 'TrayIconTemplate@2x.png';
-  state.tray = new Tray(window.__dirname + `/assets/${icon}`);
-
-  const videoMenu = [];
-  videoList.forEach((device) => {
-    videoMenu.push({
-      label: device.label,
-      click() {
-        switchVideo(device.deviceId);
-      },
-    });
-  });
-
-  const menu = Menu.buildFromTemplate([
-    {
-      label: 'Select Video',
-      submenu: videoMenu,
-    },
-  ]);
-
-  state.tray.setContextMenu(menu);
-}
-
 const videoManager = new VideoManager;
+const trayMenu = new TrayMenu(window);
 videoManager.getVideoList().then((list) => {
-  buildTrayMenu(list);
-
-  const deviceId = settings.getDeviceId() || list[0].deviceId;
-  workload(deviceId);
+  state.deviceId = settings.getDeviceId() || list[0].deviceId;
+  trayMenu.deviceId = state.deviceId;
+  trayMenu.videoList = list;
+  trayMenu.addEventListenerToVideoMenu(switchVideo);
+  trayMenu.launch();
+  workload(state.deviceId);
 });
