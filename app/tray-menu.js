@@ -11,10 +11,12 @@ module.exports = class TrayMenu {
 
     this._deviceId = '';
     this._videoList = [];
+    this._quality = '';
 
     this.tray = null;
     this.trayMenu = null;
     this.callbackVideoMenu = null;
+    this.callbackQualityMenu = null;
   }
 
   /**
@@ -24,6 +26,7 @@ module.exports = class TrayMenu {
   set deviceId(deviceId) {
     this._deviceId = deviceId;
   }
+
   /**
    * Set video list
    * @param {MediaDeviceInfo[]} videoList
@@ -33,11 +36,27 @@ module.exports = class TrayMenu {
   }
 
   /**
+   * Set quality
+   * @param {string} quality
+   */
+  set quality(quality) {
+    this._quality = quality;
+  }
+
+  /**
    * Add event listener to video menu
    * @param {function} callback
    */
   addEventListenerToVideoMenu(callback) {
     this.callbackVideoMenu = callback;
+  }
+
+  /**
+   * Add event listener to quality menu
+   * @param {function} callback
+   */
+  addEventListenerToQualityMenu(callback) {
+    this.callbackQualityMenu = callback;
   }
 
   /**
@@ -90,6 +109,28 @@ module.exports = class TrayMenu {
   }
 
   /**
+   * Build quality sub menu
+   * @return {{checked: boolean, label: string, type: string, click(): void}[]}
+   * @private
+   */
+  _buildQualitySubMenu() {
+    const menu = [];
+    ['High', 'Middle', 'Low'].forEach((size) => {
+      menu.push({
+        label: size,
+        click: () => {
+          if (this.callbackQualityMenu) {
+            this.callbackQualityMenu(size);
+          }
+        },
+        type: 'radio',
+        checked: this._quality === size,
+      });
+    });
+    return menu;
+  }
+
+  /**
    * Build video sub menu
    */
   _buildTrayMenu() {
@@ -107,6 +148,10 @@ module.exports = class TrayMenu {
       {
         label: 'Select size',
         submenu: this._buildSizeSubMenu(),
+      },
+      {
+        label: 'Select quality',
+        submenu: this._buildQualitySubMenu(),
       },
     ]);
 

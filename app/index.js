@@ -15,6 +15,8 @@ const state = {
   },
   tray: null,
   trayMenu: null,
+  net: null,
+  changingQuality: false,
 };
 
 /**
@@ -28,15 +30,15 @@ async function workload(deviceId) {
 
   _resizeElement(window.innerWidth, window.innerHeight);
 
-  const net = await bodyPix.load(settings.getBodyPixModel());
+  state.net = await bodyPix.load(settings.getBodyPixModelParam());
 
   const video = document.getElementById('video');
   const canvas = document.getElementById('canvas');
   const originalCanvas = document.getElementById('original-canvas');
 
   async function segmentationFrame() {
-    if (!state.changingVideo) {
-      const segmentation = await net.segmentPerson(state.video);
+    if (!state.changingVideo || !state.changingQuality) {
+      const segmentation = await state.net.segmentPerson(state.video);
 
       const originalCtx = originalCanvas.getContext('2d');
       const scale = originalCanvas.width / video.videoWidth;
@@ -65,6 +67,18 @@ function switchVideo(deviceId) {
   });
 
   settings.setDeviceId(deviceId);
+}
+
+/**
+ * Switch BodyPix quality
+ * @param {string} quality
+ * @return {Promise<void>}
+ */
+async function switchQuality(quality) {
+  state.changingQuality = true;
+  settings.setBodyPixModel(quality);
+  state.net = await bodyPix.load(settings.getBodyPixModelParam());
+  state.changingQuality = false;
 }
 
 function stopExistingVideoCapture() {
@@ -211,8 +225,10 @@ const trayMenu = new TrayMenu(window);
 videoManager.getVideoList().then((list) => {
   state.deviceId = settings.getDeviceId() || list[0].deviceId;
   trayMenu.deviceId = state.deviceId;
+  trayMenu.quality = settings.getBodyPixModel();
   trayMenu.videoList = list;
   trayMenu.addEventListenerToVideoMenu(switchVideo);
+  trayMenu.addEventListenerToQualityMenu(switchQuality);
   trayMenu.launch();
   workload(state.deviceId);
 });
