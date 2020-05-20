@@ -12,6 +12,7 @@ const state = {
   ratio() {
     return this.videoHeight / this.videoWidth;
   },
+  tray: null,
 };
 
 /**
@@ -204,40 +205,14 @@ window.addEventListener('resize', () => {
 });
 
 /**
- * Build context menu
+ * Build tray menu
  * @param {MediaDeviceInfo[]} videoList
  */
-function buildContextMenu(videoList) {
-  const remote = window.remote;
-  const Menu = remote.Menu;
-
-  const videoMenu = [];
-  videoList.forEach((device) => {
-    videoMenu.push({
-      label: device.label,
-      click() {
-        switchVideo(device.deviceId);
-      },
-    });
-  });
-
-  const menu = Menu.buildFromTemplate([
-    {
-      label: 'Select Video',
-      submenu: videoMenu,
-    },
-  ]);
-
-  window.addEventListener('contextmenu', (event) => {
-    event.preventDefault();
-    menu.popup(remote.getCurrentWindow());
-  }, false);
-}
-
 function buildTrayMenu(videoList) {
   const remote = window.remote;
   const {Tray, Menu} = remote;
-  const trayIcon = new Tray(__dirname + '/assets/TrayIconTemplate.png');
+  const icon = window.os.platform() === 'darwin' ? 'TrayIconTemplate.png' : 'TrayIconTemplate@2x.png';
+  state.tray = new Tray(window.__dirname + `/assets/${icon}`);
 
   const videoMenu = [];
   videoList.forEach((device) => {
@@ -256,12 +231,11 @@ function buildTrayMenu(videoList) {
     },
   ]);
 
-  trayIcon.setContextMenu(menu);
+  state.tray.setContextMenu(menu);
 }
 
 const videoManager = new VideoManager;
 videoManager.getVideoList().then((list) => {
-  buildContextMenu(list);
   buildTrayMenu(list);
 
   const deviceId = settings.getDeviceId() || list[0].deviceId;
