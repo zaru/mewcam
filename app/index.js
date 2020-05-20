@@ -234,9 +234,35 @@ function buildContextMenu(videoList) {
   }, false);
 }
 
+function buildTrayMenu(videoList) {
+  const remote = window.remote;
+  const {Tray, Menu} = remote;
+  const trayIcon = new Tray(__dirname + '/assets/TrayIconTemplate.png');
+
+  const videoMenu = [];
+  videoList.forEach((device) => {
+    videoMenu.push({
+      label: device.label,
+      click() {
+        switchVideo(device.deviceId);
+      },
+    });
+  });
+
+  const menu = Menu.buildFromTemplate([
+    {
+      label: 'Select Video',
+      submenu: videoMenu,
+    },
+  ]);
+
+  trayIcon.setContextMenu(menu);
+}
+
 const videoManager = new VideoManager;
 videoManager.getVideoList().then((list) => {
   buildContextMenu(list);
+  buildTrayMenu(list);
 
   const deviceId = settings.getDeviceId() || list[0].deviceId;
   workload(deviceId);
