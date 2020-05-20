@@ -11,8 +11,8 @@ see https://twitter.com/zaru/status/1259870621581754370
 
 ## Download
 
-- [v1.2.0 for macos](https://github.com/zaru/mewcam/releases/download/v1.2.0/mewcam_mac_v1.2.0.dmg)
-- [v1.2.0 for Windows](https://github.com/zaru/mewcam/releases/download/v1.2.0/mewcam_win_v1.2.0.exe)
+- [v1.3.0 for macOS](https://github.com/zaru/mewcam/releases/download/v1.3.0/mewcam_mac_v1.3.0.dmg)
+- [v1.3.0 for Windows](https://github.com/zaru/mewcam/releases/download/v1.3.0/mewcam_win_v1.3.0.exe)
 
 ## ToDo
 
