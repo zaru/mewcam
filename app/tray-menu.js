@@ -70,6 +70,26 @@ module.exports = class TrayMenu {
   }
 
   /**
+   * Build window size sub menu
+   * @return {{checked: boolean, label: string, type: string, click(): void}[]}
+   * @private
+   */
+  _buildSizeSubMenu() {
+    const menu = [];
+    ['Big', 'Middle', 'Small'].forEach((size) => {
+      menu.push({
+        label: size,
+        click() {
+          this.window.ipcRenderer.send('windowResize', size);
+        },
+        type: 'radio',
+        checked: size === 'Middle',
+      });
+    });
+    return menu;
+  }
+
+  /**
    * Build video sub menu
    */
   _buildTrayMenu() {
@@ -83,6 +103,10 @@ module.exports = class TrayMenu {
       {
         label: 'Select video',
         submenu: this._buildVideoSubMenu(),
+      },
+      {
+        label: 'Select size',
+        submenu: this._buildSizeSubMenu(),
       },
     ]);
 
